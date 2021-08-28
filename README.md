@@ -6,6 +6,8 @@ SHIFT OCR is a library fo handwriting text segmentation and character recognitio
 
 ## Doc2Text
 
+Transcribe an image into text 
+
 ``` 
 pip install shiftlab_ocr
 
@@ -33,6 +35,10 @@ result = scanner.doc2text(PATH_TO_IMAGE)
 
 ## Generator of handwriting
 
+It generates handwriting script with random backgrounds and handwriting fonts with given list of strings
+
+```
+
 from shiftlab_ocr import Generator
 
 g = Generator(lang='ru')
@@ -40,8 +46,12 @@ g.upload_source('/content/source.txt')
 
 s = g.generate_from_string('Москва',min_length=4,max_length=24) # get from a string
 s
+
+```
+
 ![](https://sun9-51.userapi.com/impg/CSeyZPb4rDmP4aCYIDoMDx5VQMXcWO6CwtpGUA/vH_cghX1JtA.jpg?size=344x88&quality=96&sign=c61344d4c7f5576ffe03e750ca31f94c&type=album)
 
+```
 
 b = g.generate_batch(12,4,13) # get batch of random samples from source.txt
 fig=plt.figure(figsize=(10, 10))
@@ -50,6 +60,8 @@ columns = int(len(b)/8) + 2
 for i in range(len(b)):
   fig.add_subplot(rows, columns, i+1)
   plt.imshow(np.asarray(b[i][0])) 
+
+```
 
 ![](https://sun9-80.userapi.com/impg/ay9o11D8ItN65kDqYnZBahiZFk1zZ2wo5BYoMA/I_nNhdMQeLs.jpg?size=600x409&quality=96&sign=9d6a3ee935fcdc7112aec557eeed74f1&type=album)
 
