@@ -1,9 +1,10 @@
-import math
+import cv2, os, argparse, time, random, math
+from torchvision import transforms, models
 import torch
+import os
 import torch.nn as nn
 import numpy as np
-from torchvision import models
-from ocr_model_utility import *
+from .ocr_model_utility import *
 
 chars = ['PAD', 'SOS', ' ', '!', '"', '%', '(', ')', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '?', '[', ']', '«', '»', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Э', 'Ю', 'Я', 'а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', 'ё', 'EOS']
 char2idx = {char: idx for idx, char in enumerate(chars)}
@@ -12,7 +13,6 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class TransformerModel(nn.Module):
     def __init__(self, bb_name, outtoken, hidden, enc_layers=1, dec_layers=1, nhead=1, dropout=0.1, pretrained=False):
-        # здесь загружаем сверточную модель, например, resnet50
         super(TransformerModel, self).__init__()
         self.backbone = models.__getattribute__(bb_name)(pretrained=pretrained)
         self.backbone.fc = nn.Conv2d(2048, int(hidden / 2), 1)
@@ -23,6 +23,7 @@ class TransformerModel(nn.Module):
         self.transformer = nn.Transformer(d_model=hidden, nhead=nhead, num_encoder_layers=enc_layers,
                                           num_decoder_layers=dec_layers, dim_feedforward=hidden * 4, dropout=dropout,
                                           activation='relu')
+
         self.fc_out = nn.Linear(hidden, outtoken)
         self.src_mask = None
         self.trg_mask = None
@@ -48,6 +49,7 @@ class TransformerModel(nn.Module):
         x = self.backbone.layer2(x)
         x = self.backbone.layer3(x)
         x = self.backbone.layer4(x)
+        # x = self.backbone.avgpool(x)
 
         x = self.backbone.fc(x)
         x = x.permute(0, 3, 1, 2).flatten(2).permute(1, 0, 2)
@@ -65,18 +67,7 @@ class TransformerModel(nn.Module):
 
         return output
 
-    # take PIL.Image object and predict what is written on the image
-    # returns string
     def scan(self, img):
-        """
-        params
-        ---
-        img : PIL.Image
-
-        returns
-        ---
-        pred : str
-        """
         img = np.asarray(img)
         img = process_image(img).astype('uint8')
         img = img / img.max()
@@ -95,6 +86,7 @@ class TransformerModel(nn.Module):
         x = self.backbone.layer2(x)
         x = self.backbone.layer3(x)
         x = self.backbone.layer4(x)
+        # x = model.backbone.avgpool(x)
 
         x = self.backbone.fc(x)
         x = x.permute(0, 3, 1, 2).flatten(2).permute(1, 0, 2)
@@ -135,12 +127,13 @@ class PositionalEncoding(nn.Module):
         x = x + self.scale * self.pe[:x.size(0), :]
         return self.dropout(x)
 
+
 # CREATE A MODEL WITH GIVEN WEIGHTS
 def get_model(PATH_TO_WEIGHTS):
     model = TransformerModel('resnet50', len(chars), hidden=512, enc_layers=2, dec_layers=2,
                              nhead=4, pretrained=True).to(device)
-    chk = PATH_TO_WEIGHTS
-    model ,epochs, best_eval_loss_cer, valid_loss_all, train_loss_all, eval_accuracy_all, eval_loss_cer_all = load_from_checkpoint(model,chk)
+    if torch.cuda.is_available():
+        model.load_state_dict(torch.load(PATH_TO_WEIGHTS))
+    else:
+        model.load_state_dict(torch.load(PATH_TO_WEIGHTS,map_location=torch.device('cpu'))['model'])
     return model
-
-

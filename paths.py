@@ -1,4 +1,5 @@
 import os
 dirname = os.path.dirname(__file__)
 DIR = os.path.join(dirname, 'weights')
-PATH_TO_WEIGHTS_HW_CYR = os.path.join(DIR,'ocr_transformer_rn50_64x256_52wer_jit.pt')
+PATH_TO_SEGM_MODEL = os.path.join(DIR,'unet.pth')
+PATH_TO_MASK = os.path.join(DIR,'last_mask.png')
