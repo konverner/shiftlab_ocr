@@ -6,7 +6,7 @@ SHIFT OCR is a library fo handwriting text segmentation and character recognitio
 
 ## Doc2Text
 
-Transcribe an image into text 
+it transcribes an image into text 
 
 ``` 
 pip install shiftlab_ocr
