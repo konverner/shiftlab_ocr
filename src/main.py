@@ -41,7 +41,7 @@ class Scanner():
         resized_image = image.resize((512, 512), Image.ANTIALIAS)
         boxes, _ = run_segmentation(self.segm_model, resized_image, IMAGE_PATH)
         crops = []
-        pad = 12  # padding
+        pad = 16  # padding
         for box in boxes:
             y1, y2, x1, x2 = box
             cropped = image.crop((x1*original_image_width/512 - pad, y1*original_image_height/512 - pad, \
