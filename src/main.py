@@ -37,8 +37,9 @@ class Scanner():
         """
         text = ''
         image = Image.open(IMAGE_PATH)
+        original_image_width, original_image_height = image.size
         image = image.resize((512, 512), Image.ANTIALIAS)
-        boxes, _ = run_segmentation(self.segm_model, IMAGE_PATH)
+        boxes, _ = run_segmentation(self.segm_model, image, IMAGE_PATH)
         crops = []
         pad = 12  # padding
         for box in boxes:
@@ -49,4 +50,11 @@ class Scanner():
         crops = sorted(crops)
         for crop in crops:
             text += self.ocr_model.scan(crop.img) + ' '
+
+        # restore original sizes of crops
+        for i in range(len(crops)):
+            current_width, current_height = crops[i].img.size
+            crops[i].img = crops[i].img.resize(
+                (int(current_width*original_image_width/512), int(current_height*original_image_height/512)))
+
         return text, crops

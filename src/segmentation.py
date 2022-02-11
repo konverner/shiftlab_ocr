@@ -131,14 +131,13 @@ def mask2boxes(PATH_TO_IMAGE, return_crops=False):
     return boxes
 
 
-def run_segmentation(model, PATH_TO_IMAGE):
-    transform = transforms.Compose([transforms.Resize((512, 512)), transforms.ToTensor()])
-    image = Image.open(PATH_TO_IMAGE).convert('RGB')
+def run_segmentation(model, image, PATH_TO_IMAGE):
+    transform = transforms.Compose([transforms.ToTensor()])
     image = transform(image)
     preds = torch.sigmoid(model(image.unsqueeze(0)))
     mask = (preds > 0.9999).float()
     save_image(mask, PATH_TO_MASK)
-    boxes, crops = mask2boxes(PATH_TO_IMAGE, PATH_TO_MASK, return_crops=True)
+    boxes, crops = mask2boxes(PATH_TO_IMAGE, return_crops=True)
     return boxes, crops
 
 
