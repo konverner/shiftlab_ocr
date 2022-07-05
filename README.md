@@ -18,7 +18,7 @@ pip install shiftlab_ocr
 from shiftlab_ocr import Scanner
 
 PATH_TO_IMAGE = 'test.jpg'
-scanner = Scanner()
+scanner = Scanner('hw-cyr')
 result = scanner.doc2text(PATH_TO_IMAGE)
 
 ('Директору Заявление 10 январе 2019г. Ирл Иванов А.П. ',
