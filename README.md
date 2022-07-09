@@ -15,11 +15,10 @@ pip install shiftlab_ocr
 
 ```
 
-from shiftlab_ocr import Scanner
+from shiftlab_ocr.doc2text import Reader
 
-PATH_TO_IMAGE = 'test.jpg'
-scanner = Scanner('hw-cyr')
-result = scanner.doc2text(PATH_TO_IMAGE)
+reader = Reader()
+result = reader.doc2text("/content/test.png")
 
 ('Директору Заявление 10 январе 2019г. Ирл Иванов А.П. ',
  [<shift_ocr.crop.Crop at 0x7f158cffd1d0>,
