@@ -94,19 +94,28 @@ class UNet(nn.Module):
         return final
 
 
-def mask2boxes(PATH_TO_IMAGE, return_crops=False):
-    """
-  params
-  ---
-  PATH_TO_IMAGE : str
+class Detector:
+  def __init__(self):
+    self._device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    self.model = UNet(n_filters=32)
+    self.device = self._device
 
-  returns
-  ---
-  boxes : list of tuples
-    tuple is (y1,y2,x1,x2) where (y1,x1) is the first point of a box and (y2,x2) is the second one
-  crops : list of numpy.ndarray
-    correspondent segments from the image
-  """
+  def load_model(self, weights):
+    self.model.load_state_dict(torch.load(weights, map_location=self._device))
+
+  def _mask2boxes(self, PATH_TO_IMAGE, return_crops=False):
+    """
+    params
+    ---
+    PATH_TO_IMAGE : str
+
+    returns
+    ---
+    boxes : list of tuples
+      tuple is (y1,y2,x1,x2) where (y1,x1) is the first point of a box and (y2,x2) is the second one
+    crops : list of numpy.ndarray
+      correspondent segments from the image
+    """
     image = cv2.imread(PATH_TO_MASK)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     ret, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
@@ -131,16 +140,12 @@ def mask2boxes(PATH_TO_IMAGE, return_crops=False):
     return boxes
 
 
-def run_segmentation(model, image, PATH_TO_IMAGE):
+  def run(self, image, PATH_TO_IMAGE):
     transform = transforms.Compose([transforms.ToTensor()])
     image = transform(image)
-    preds = torch.sigmoid(model(image.unsqueeze(0)))
+    preds = torch.sigmoid(self.model(image.unsqueeze(0)))
     mask = (preds > 0.9999).float()
     save_image(mask, PATH_TO_MASK)
-    boxes, crops = mask2boxes(PATH_TO_IMAGE, return_crops=True)
+    boxes, crops = self._mask2boxes(PATH_TO_IMAGE, return_crops=True)
     return boxes, crops
 
-
-hyperparametrs = {
-    'n_filters': 32,
-}
