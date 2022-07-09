@@ -9,8 +9,8 @@ from shiftlab_ocr.doc2text.segmentation import Detector
 class Reader:
     def __init__(
       self,
-      detector_weights = os.path.join(os.path.dirname(__file__), "unet.pth"),
-      recognizer_weights = os.path.join(os.path.dirname(__file__), "ocr_transformer_4h2l_simple_conv_64x256.pth"),
+      detector_weights = os.path.join(os.path.dirname(__file__), "weights/unet.pth"),
+      recognizer_weights = os.path.join(os.path.dirname(__file__), "weights/ocr_transformer_4h2l_simple_conv_64x256.pt"),
       ):
       self.recognizer = Recognizer()
       self.recognizer.load_model(recognizer_weights)
