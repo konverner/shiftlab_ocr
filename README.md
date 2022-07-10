@@ -1,4 +1,4 @@
-# shiftlab_ocr
+# Shiftlab Ocr
 
 SHIFT OCR is a library fo handwriting text segmentation and character recognition.
  
@@ -38,7 +38,7 @@ It generates handwriting script with random backgrounds and handwriting fonts wi
 
 ```
 
-from shiftlab_ocr import Generator
+from shiftlab_ocr.generator import Generator
 
 g = Generator(lang='ru')
 g.upload_source('/content/source.txt')
