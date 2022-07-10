@@ -9,13 +9,13 @@ from shiftlab_ocr.doc2text.segmentation import Detector
 class Reader:
     def __init__(
       self,
-      detector_weights = os.path.join(os.path.dirname(__file__), "weights/unet.pth"),
+      yolo_path = os.path.join(os.path.dirname(__file__), "yolov5"),
+      detector_weights = os.path.join(os.path.dirname(__file__), "weights/weights.pt"),
       recognizer_weights = os.path.join(os.path.dirname(__file__), "weights/ocr_transformer_4h2l_simple_conv_64x256.pt"),
       ):
       self.recognizer = Recognizer()
       self.recognizer.load_model(recognizer_weights)
-      self.detector = Detector()
-      self.detector.load_model(detector_weights)
+      self.detector = Detector(yolo_path, detector_weights)
 
     def doc2text(self, image_path):
       """
@@ -31,18 +31,14 @@ class Reader:
       crops are sorted
       """
       text = ''
-      image = Image.open(image_path).convert("RGB")
-      original_image_width, original_image_height = image.size
-      resized_image = image.resize((512, 512), Image.ANTIALIAS)
-      boxes, _ = self.detector.run(resized_image, image_path)
+      image = Image.open(image_path)
+      boxes = self.detector.run(image_path)
       crops = []
-      pad = 16  # padding
       for box in boxes:
-          y1, y2, x1, x2 = box
-          cropped = image.crop((x1 * original_image_width / 512 - pad, y1 * original_image_height / 512 - pad,
-                                x2 * original_image_width / 512 + pad, y2 * original_image_height / 512 + pad))
+          cropped = image.crop((box[0], box[1],
+                                box[2], box[3]))
 
-          crops.append(Crop([[x1, y1], [x2, y2]], img=cropped))
+          crops.append(Crop([[box[0], box[1]], [box[2], box[3]]], img=cropped))
       crops = sorted(crops)
       for crop in crops:
           text += self.recognizer.run(crop.img) + ' '
