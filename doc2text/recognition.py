@@ -86,6 +86,7 @@ class TransformerModel(nn.Module):
     self.trg_mask = None
     self.memory_mask = None
     self._device = device
+    self.to(self._device)
 
   def generate_square_subsequent_mask(self, sz):
     mask = torch.triu(torch.ones(sz, sz, device=self._device), 1)
