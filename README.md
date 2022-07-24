@@ -8,6 +8,8 @@ SHIFT OCR is a library fo handwriting text segmentation and character recognitio
 
 it transcribes an image into text 
 
+![](https://github.com/constantin50/shiftlab_ocr/blob/main/demo_image.png)
+
 ``` 
 pip install shiftlab_ocr
 
@@ -49,7 +51,7 @@ def show_img_grid(images, N):
 show_img_grid(result[1], 48)
 ```
 
-![](https://github.com/constantin50/shiftlab_ocr/blob/main/image.png)
+![](https://github.com/constantin50/shiftlab_ocr/blob/main/crops_image.png)
 
 ## Generator of handwriting
 
