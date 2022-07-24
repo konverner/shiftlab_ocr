@@ -20,14 +20,33 @@ from shiftlab_ocr.doc2text import Reader
 reader = Reader()
 result = reader.doc2text("/content/test.png")
 
-('Директору Заявление 10 январе 2019г. Ирл Иванов А.П. ',
- [<shift_ocr.crop.Crop at 0x7f158cffd1d0>,
-  <shift_ocr.crop.Crop at 0x7f158cffd610>,
-  <shift_ocr.crop.Crop at 0x7f158cffd790>,
-  <shift_ocr.crop.Crop at 0x7f158cffd8d0>,
-  <shift_ocr.crop.Crop at 0x7f158cffdd50>,
-  <shift_ocr.crop.Crop at 0x7f158cffd910>])
+print(result[0])
 
+Действительно ли добро сильнее зла?
+Именно над этим вопросом аставля заставляет
+читателей задуматься В. Тендряков.
+Автор рассматривает данную пробле-
+му на конкретном примере, рассказывая
+историю 00 заблудившемся немце русских
+солдатах, которые пожалели врала и
+позволи ему остаться землянке. 
+
+```
+
+```
+import matplotlib.pyplot as plt
+
+def show_img_grid(images, N):
+    n = int(N**(0.5))
+    k = 0
+    f, axarr = plt.subplots(n,n,figsize=(10,10))
+    for i in range(n):
+        for j in range(n):
+            axarr[i,j].imshow(images[k].img)
+            k += 1
+    f.show()
+
+show_img_grid(result[1], 48)
 ```
 
 ![](https://github.com/constantin50/shiftlab_ocr/blob/main/image.png)
