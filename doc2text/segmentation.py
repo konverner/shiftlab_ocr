@@ -1,6 +1,5 @@
-import os
 import torch
-import pandas as pd
+
 
 class Detector:
   def __init__(self, yolo_path, model_path):
@@ -15,4 +14,3 @@ class Detector:
     for i in range(data.shape[0]):
       boxes.append([data['xmin'][i], data['ymin'][i], data['xmax'][i], data['ymax'][i]])
     return boxes
-
